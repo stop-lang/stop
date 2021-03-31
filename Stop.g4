@@ -14,14 +14,17 @@ packageDeclaration
     ;
 
 include
-    : 'include' FILENAME
+    : 'include' STRING
     ;
 
+model_annotation:
+   '@' model_type;
+
 model
-   : START? MODEL_TYPE (throw_type)? block
-   | STOP? MODEL_TYPE (throw_type)? block
-   | QUEUE? MODEL_TYPE (throw_type)? block
-   | MODEL_TYPE RETURN_OP return_type (throw_type)? return_block
+   : annotation* START? MODEL_TYPE (throw_type)? block
+   | annotation* STOP? MODEL_TYPE (throw_type)? block
+   | annotation* QUEUE? MODEL_TYPE (throw_type)? block
+   | annotation* MODEL_TYPE RETURN_OP return_type (throw_type)? return_block
    ;
 
 block
@@ -88,7 +91,7 @@ dynamic_source_mapping_parameter_rename
     ;
 
 type
-    : scalar_type | model_type
+    : scalar_type | model_type | model_annotation
     ;
 
 collection
@@ -106,10 +109,34 @@ throw_parameter
     : model_type
     ;
 
-transition: TRANSITION_OP model_type;
+transition: TRANSITION_OP model_type
+    | TRANSITION_OP model_annotation
+    ;
 
-enqueue: ENQUEUE_OP model_type;
+enqueue: ENQUEUE_OP model_type
+    | ENQUEUE_OP model_annotation
+    ;
 
+annotation:
+   '@' annotation_type annotation_parameters?
+   ;
+
+annotation_type:
+   model_type
+   | reference
+   ;
+
+annotation_parameters:
+   '(' (annotation_parameter (',' annotation_parameter)*)* ')'
+   ;
+
+annotation_parameter
+    : ID ':' annotation_parameter_value
+    ;
+
+annotation_parameter_value 
+    : STRING
+    ;
 
 // Tokens
 START : 'start';
@@ -140,9 +167,7 @@ ID
    : LOWERCASE_LETTER ( LETTER | DIGIT )*
    ;
 
-FILENAME
-    : '"' (LETTER | DIGIT | DOT | '\\' | '/' | '-' | '_')+ '"'
-    ;
+STRING : '"' .*? '"' ;
 
 fragment UPPERCASE_LETTER
    : [A-Z]
