@@ -106,7 +106,7 @@ throw_type
     ;
 
 throw_parameter
-    : model_type
+    : model_type | model_annotation
     ;
 
 transition: TRANSITION_OP model_type
