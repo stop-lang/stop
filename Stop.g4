@@ -197,7 +197,8 @@ ID
    : LOWERCASE_LETTER ( LETTER | DIGIT )*
    ;
 
-STRING : '"' .*? '"' ;
+fragment ESCAPED_QUOTE : '\\"';
+STRING :   '"' ( ESCAPED_QUOTE | ~('\n'|'\r') )*? '"';
 
 fragment UPPERCASE_LETTER
    : [A-Z]
