@@ -65,8 +65,8 @@ enumeration
     ;
 
 field
-	: OPTIONAL? type ID (dynamic_source)?
-	| OPTIONAL? collection ID (dynamic_source)?
+	: OPTIONAL? type ID (dynamic_source)? validation_block?
+	| OPTIONAL? collection ID (dynamic_source)? validation_block?
 	;
 
 dynamic_source
@@ -88,6 +88,36 @@ reference
 
 dynamic_source_mapping_parameter_rename
     : reference
+    ;
+
+validation_block
+   : '{' ( validation_statement ';'? )* '}'
+   ;
+
+validation_statement
+   : state_validation
+   | validation
+   ;
+
+state_validation
+   : '!state' (model_type | model_annotation)
+   ;
+
+validation
+   : '!' ID validation_parameters?
+   ;
+
+validation_parameters:
+   '(' (validation_parameter (',' validation_parameter)*)* ')'
+   ;
+
+validation_parameter
+    : ID ':' validation_parameter_value
+    ;
+
+validation_parameter_value 
+    : STRING
+    | NUMBER
     ;
 
 type
